@@ -1,0 +1,44 @@
+
+<section>
+    <div class="article">
+      <article ng-repeat="post in blogs | reverse | limitTo: 3">
+          <h2>{{::post.title}}</<h2></h2>
+          <p><em class="posted-on">posted on {{::post.date_posted}}</em></p>
+          <p>{{::post.content | limitTo: 300}}...</p>
+          <p>&rarr; <a ui-sref="blog.article({article: post.title, id: post.pid})"><em>Read more</em></a></p>
+          <p><a ui-sref="blog.article({article: post.title, id: post.pid})">{{::post.likes}} Likes</a> | <a ui-sref="blog.article({article: post.title, id: post.pid})">{{::post.comments.length}} Comments</a></p>
+      </article>
+    <div>
+  <p ng-show="!hasPosts()">No new posts yet.</p>
+</section>
+
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4 class="modal-title" id="myLargeModalLabel">Add New Post<a class="anchorjs-link" href="#myLargeModalLabel"><span class="anchorjs-icon"></span></a></h4>
+        </div>
+
+        <div class="my-form">
+          <form role="form" ng-submit="createPost(newpost)">
+            <div class="form-group">
+              <label for="blogtitle">Post Title:</label>
+              <input type="text" class="form-control" name="blogtitle" ng-model="newpost.title" id="blogtitle" placeholder="Your blog title here." />
+            </div>
+            <div class="form-group">
+              <label for="blogcontent">Post Content:</label>
+              <textarea ng-model="newpost.content" class="form-control" name="blogcontent" id="blogcontent" placeholder="Your blog content here."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="blogauthor">Author:</label>
+              <input type="text" class="form-control" name="blogauthor" ng-model="newpost.author" id="blogauthor" placeholder="The name of the author" />
+            </div>
+
+            <input type="submit" class="btn btn-primary" value="Add post" />
+          </form>
+        </div>
+
+    </div>
+  </div>
+</div>

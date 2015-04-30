@@ -1,0 +1,21 @@
+<h2>{{post.title}}</h2>
+<p>{{post.content}}</p>
+<button class="btn btn-success" ng-click="registerLikes(post.pid)">Like</button>
+
+<hr />
+<form>
+    <div class="form-group">
+     <textarea class="form-control" ng-model="newcomment" placeholder="Place your comment here."></textarea>
+   </div>
+   <div class="form-group">
+     <input type="button" class="btn btn-primary" ng-click="registerComment(post.pid, newcomment)" value="Add comment" />
+    </div>
+</form>
+
+<div ng-repeat="comment in comments | reverse">
+  <blockqoute>
+    {{comment.content}} <br />
+    <em class="posted-on">commented on {{comment.posted_date}}</em>
+  </blockqoute>
+  <hr />
+</div>
