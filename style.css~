@@ -42,6 +42,7 @@ article:hover{
 /**** HEADER***/
 .header{
   margin:0 0 2em 0;
+  height:10em;
   background:#123;
   color:#fff;
   padding:1em;

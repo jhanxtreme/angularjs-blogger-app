@@ -1,4 +1,4 @@
-<div class="header row">
+<div class="header">
 
   <div class="col-md-8">
   	<div id="logo"><h3><a ui-sref="blog">JHANXTREME</a></h3></div>
