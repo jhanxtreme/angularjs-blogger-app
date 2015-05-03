@@ -168,7 +168,7 @@ angular.module('myBlog', ['ui.router'])
               break;
             }
           }
-          $window.localStorage['blogs'] = angular.toJson(blogs);
+          $window.localStorage['blogs'] = angular.fromJson(blogs);
         },
         registerComment: function(id, newcomment){
           var blogs = angular.fromJson($window.localStorage['blogs']);
