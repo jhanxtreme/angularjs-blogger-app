@@ -131,66 +131,60 @@ angular.module('myBlog', ['ui.router'])
 
 //services
 .factory('Blogs', ['$http', '$q', '$window', function($http, $q, $window){
-    return {
 
-        getAll : function(){
-          var defered = $q.defer();
-          var blogs = angular.fromJson($window.localStorage['blogs']);
-          defered.resolve(blogs);
-          return defered.promise;
-        },
-        save: function(post){
-          var tmp_blogs = angular.fromJson($window.localStorage['blogs']);
-          tmp_blogs.push(post);
-          $window.localStorage['blogs'] = angular.toJson(tmp_blogs);
-        },
-        hasPosts: function(){
-          return (angular.fromJson($window.localStorage['blogs']).length > 0) ? true : false;
-        },
-        getPost: function(id){
-          var defered = $q.defer();
-          var blogs = angular.fromJson($window.localStorage['blogs']);
-          var article = {};
-          for(var i=0, max = blogs.length; i < max; i++){
-            if(id == blogs[i].pid){
-              article = blogs[i];
-              break;
-            }
-          }
-          defered.resolve(article);
-          return defered.promise;
-        },
-        registerLike: function(id){
-          var blogs = angular.fromJson($window.localStorage['blogs']);
-          for(var i=0, max = blogs.length; i < max; i++){
-            if(id == blogs[i].pid){
-              blogs[i].likes += 1;
-              break;
-            }
-          }
-          $window.localStorage['blogs'] = angular.toJson(blogs);
-        },
-        registerComment: function(id, newcomment){
-          var blogs = angular.fromJson($window.localStorage['blogs']);
-          for(var i=0, max = blogs.length; i < max; i++){
-            if(id == blogs[i].pid){
-              blogs[i].comments.push(newcomment);
-              break;
-            }
-          }
-          $window.localStorage['blogs'] = angular.toJson(blogs);
-        },
-        getComments: function(id){
-          var defered = $q.defer();
-          var blogs = angular.fromJson($window.localStorage['blogs']);
-          var comments = [];
-          comments = blogs.filter(function(elem, index){
-              return (id == index) ? blogs[index].comments : [];
-          });
-          return comments;
-        }
+	var saveLocalStorage = function(blogs){
+	  $window.localStorage['blogs'] = angular.toJson(blogs);
+	}
+	var filterBlog = function(blogs, id){
+		 for(var i=0, max = blogs.length; i < max; i++){
+		    if(id == blogs[i].pid){
+			return {id: blogs[i].pid, post: blogs[i]};
+		    }
+		}
+		return {id:-1, post:{}};
+	}
+	var getBlogs = function(){
+		return angular.fromJson($window.localStorage['blogs']);
+	}
 
-    }
+	return {
+		getAll : function(){
+			  var defered = $q.defer(), blogs = getBlogs();
+			  defered.resolve(blogs);
+			  return defered.promise;
+		},
+		save: function(post){
+			  var blogs = getBlogs();
+			  blogs.push(post);
+			  saveLocalStorage(blogs);
+		},
+		hasPosts: function(){
+		 	 return (angular.fromJson($window.localStorage['blogs']).length > 0) ? true : false;
+		},
+		getPost: function(id){
+			  var defered = $q.defer(), blogs = getBlogs(), article = {};
+	   		  article = filterBlog(blogs, id);
+			  defered.resolve(article.post);
+			  return defered.promise;
+		},
+		registerLike: function(id){
+			  var blogs = getBlogs(), post = filterBlog(blogs, id);
+	      	  	  blogs[post.id].likes += 1;
+			  saveLocalStorage(blogs);
+		},
+		registerComment: function(id, newcomment){
+			 var blogs = getBlogs(), post = filterBlog(blogs, id);
+	   	         blogs[post.id].comments.push(newcomment);
+			 saveLocalStorage(blogs);
+		},
+		getComments: function(id){
+			  var defered = $q.defer(), blogs = getBlogs(), comments = [];
+			  comments = blogs.filter(function(elem, index){
+			      return (id == index) ? blogs[index].comments : [];
+			  });
+			  return comments;
+		}
+	}
 
 }])
 

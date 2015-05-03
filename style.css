@@ -46,3 +46,7 @@ article:hover{
   color:#fff;
   padding:1em;
 }
+.header ul.top-search-addpost li{
+	float:right;
+	padding:0 5px 0 0;
+}
