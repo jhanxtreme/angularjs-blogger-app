@@ -46,7 +46,7 @@ angular.module('myBlog', ['ui.router'])
 }])
 
 // initialize first run
-.run(['$window', function($window){
+.run(['$window','$rootScope', function($window, $rootScope){
   var blogs = $window.localStorage['blogs'];
   if(undefined === blogs){
     $window.localStorage.setItem('blogs', "[]");
