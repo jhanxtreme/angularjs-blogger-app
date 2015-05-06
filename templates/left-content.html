@@ -1,0 +1,25 @@
+<ul class="list-group">
+  <li href="#" class="list-group-item active">Recent Posts</li>
+  <li class="list-group-item" ng-repeat="post in blogs | limitTo: 4 | reverse"><a ui-sref="blog.article({article: post.title, id: post.pid})">{{post.title | ucwords}}</a></li>
+  <li class="list-group-item" ng-if="!hasPosts()">No posts yet.</li>
+</ul>
+
+<!--
+<ul class="list-group">
+  <li href="#" class="list-group-item active">Categories</li>
+   <li class="list-group-item" ng-repeat="item in categories">{{item | ucwords}}</li>
+   <li ng-hide="categories" class="list-group-item" ng-hide="tags">No comments yet.</li>
+</ul>
+
+<ul class="list-group">
+  <li href="#" class="list-group-item active">Tags</li>
+  <li class="list-group-item" ng-hide="tags">No tags yet.</li>
+</ul>
+-->
+
+<ul class="list-group">
+  <li href="#" class="list-group-item active">Recent Comments</li>
+  <li class="list-group-item" ng-repeat="comment in comments | orderBy: '-posted_date' | limitTo: 5"><a ui-sref="blog.article({article: comment.post_title, id:comment.pid})">{{comment.content}}</a></li>
+  <li class="list-group-item" ng-if="!comments.length">No comments yet.</li>
+
+</ul>

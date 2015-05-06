@@ -1,0 +1,58 @@
+
+<div class="container">
+    <div class="clearfix">&nbsp;</div>
+    <div class="row">
+      <div class="col-md-1"><button data-toggle="modal" class="btn btn-info" data-target=".bs-example-modal-lg">Add Post</button></div>
+      <div class="col-md-5"><input type="text" ng-model="searchquery" placeholder="Search posts here.." class="form-control form-search" /></div>
+    </div>
+</div>
+
+<section class="col-sm-12 post">
+  <article class="list-posts" ng-if="blogs.length" ng-repeat="post in blogs | reverse | filter: searchquery">
+      <h2>{{::post.title | ucwords}}</<h2></h2>
+      <p><em class="posted-on">posted on {{::post.date_posted}}</em></p>
+      <p>{{::post.content | limitTo: 300}}...</p>
+      <p>&rarr; <a ui-sref="blog.article({article: post.title, id: post.pid})"><em>Read more</em></a></p>
+      <p><a ui-sref="blog.article({article: post.title, id: post.pid})">{{::post.likes}} Likes</a> | <a ui-sref="blog.article({article: post.title, id: post.pid})">{{::post.comments.length}} Comments</a></p>
+  </article>
+  <article ng-if="!blogs.length">
+    <p ng-show="!hasPosts()">No new posts yet.</p>
+  </article>
+</section>
+
+<!--modal-->
+  <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <h4 class="modal-title" id="myLargeModalLabel">Add New Post<a class="anchorjs-link" href="#myLargeModalLabel"><span class="anchorjs-icon"></span></a></h4>
+          </div>
+
+          <div class="my-form">
+            <form role="form" ng-submit="createPost(newpost)">
+              <div class="form-group">
+                <label for="blogtitle">Post Title:</label>
+                <input type="text" class="form-control" name="blogtitle" ng-model="newpost.title" id="blogtitle" placeholder="Your blog title here." />
+                <span class="error-msg" ng-if="error.title.length">*{{error.title}}</span>
+              </div>
+
+              <div class="form-group">
+                <label for="blogcontent">Post Content:</label>
+                <textarea ng-model="newpost.content" class="form-control" name="blogcontent" id="blogcontent" placeholder="Your blog content here."></textarea>
+                <span class="error-msg" ng-if="error.content.length">*{{error.content}}</span>
+              </div>
+              <div class="form-group">
+                <label for="blogauthor">Author:</label>
+                <input type="text" class="form-control" name="blogauthor" ng-model="newpost.author" id="blogauthor" placeholder="The name of the author" />
+                <span class="error-msg" ng-if="error.author.length">*{{error.author}}</span>
+              </div>
+
+              <input type="submit" class="btn btn-primary" value="Add post" />
+            </form>
+          </div>
+
+      </div>
+    </div>
+  </div>
+<!--modal-->

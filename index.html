@@ -26,11 +26,18 @@
   </head>
 
   <body>
-    <div class="container-fluid" ui-view="header"></div>
-    <div class="container-fluid">
-        <div class="col-md-8" ui-view="left-main-content"></div>
-        <div class="col-md-4" ui-view="right-main-content"></div>
-    </div><!--end container -->
+
+    <!--left content-->
+    <div class="left-content">
+      <div class="logo"><h1><a ui-sref="blog">BLOGGER PRESS</a></h1></div>
+      <div ui-view="left-content"></div>
+    </div>
+
+    <!--right content-->
+    <div class="right-content">
+      <div ui-view="right-content"></div>
+    </div>
+
   </body>
 
 </html>

@@ -11,32 +11,26 @@ angular.module('myBlog', ['ui.router'])
       .state('blog', {
         url:'/blog',
         views:{
-          'header':{
-              templateUrl: 'templates/header.html'
-          },
-          'left-main-content': {
-              templateUrl: 'templates/left-main-content.html',
-              controller: 'BlogController'
-          },
-          'right-main-content': {
-              templateUrl: 'templates/right-main-content.html',
+          'left-content': {
+              templateUrl: 'templates/left-content.html',
               controller: 'NavController'
+          },
+          'right-content': {
+              templateUrl: 'templates/right-content.html',
+              controller: 'BlogController'
           }
         }
       })
       .state('blog.article',{
         url: '/:article/:id',
         views:{
-          'header':{
-              templateUrl: 'templates/header.html'
-          },
-          'left-main-content@': {
-              templateUrl: 'templates/left-article-content.html',
-              controller: 'PostController'
-          },
-          'right-main-content': {
-              templateUrl: 'templates/right-main-content.html',
+          'left-content@': {
+              templateUrl: 'templates/left-content.html',
               controller: 'NavController'
+          },
+          'right-content@': {
+              templateUrl: 'templates/right-article-content.html',
+              controller: 'PostController'
           }
         }
       })
@@ -47,16 +41,17 @@ angular.module('myBlog', ['ui.router'])
 // initialize first run
 .run(['$window','$rootScope', function($window, $rootScope){
   var blogs = $window.localStorage['blogs'];
-  if(undefined === blogs){
-    $window.localStorage.setItem('blogs', "[]");
+  if(undefined === blogs || !blogs.length){
+    $window.localStorage.setItem("blogs", "[]");
     $rootScope.blogs = [];
   }
 
 }])
 
-//controllers
+//CONTROLLERS
 .controller('BlogController', ['Blogs','$rootScope', '$scope', function(Blogs, $rootScope, $scope){
   $scope.categories = ['travel','events','news','weather'];
+  $scope.newpost = {title:'', content:'', author:''};
 
   Blogs.getAll().then(function(data){
     $rootScope.blogs = data;
@@ -67,6 +62,21 @@ angular.module('myBlog', ['ui.router'])
   }
 
   $scope.createPost = function(newpost){
+    $scope.error = {};
+    if(!newpost.title.length){
+      $scope.error['title'] = "Title field is required.";
+    }
+    if(!newpost.content.length){
+      $scope.error['content'] = "Content field is required.";
+    }
+    if(!newpost.author.length){
+      $scope.error['author'] = "Author field is required.";
+    }
+
+    if($scope.error['title'] || $scope.error['content'] || $scope.error['author']){
+      return false;
+    }
+
     var date = new Date();
     var newpost = {
       title: newpost.title,
@@ -80,18 +90,16 @@ angular.module('myBlog', ['ui.router'])
     }
     Blogs.save(newpost);
     $rootScope.blogs.push(newpost);
-    this.newpost = {};
+    $scope.newpost = {};
   }
 
 }])
 
-.controller('PostController', ['Blogs', '$scope','$stateParams','$rootScope', function(Blogs, $scope, $stateParams, $rootScope){
+.controller('PostController', ['Blogs', '$scope','$stateParams', function(Blogs, $scope, $stateParams){
   var id = $stateParams.id;
   $scope.post = {};
   $scope.newcomment = "";
   $scope.comments = [];
-
-  //console.log(Blogs.getComments(id));
 
   Blogs.getPost(id).then(function(data){
     $scope.post = data;
@@ -103,88 +111,140 @@ angular.module('myBlog', ['ui.router'])
   }
 
   $scope.registerComment = function(id, newcomment){
-    var date = new Date();
-    var comment = {
-      content: newcomment,
-      posted_date: String(date).replace(/\sGMT.*/gi,""),
-      author: "anonymous",
-      active: 1
+    if(newcomment.trim().length){
+        var date = new Date();
+        var comment = {
+          content: newcomment,
+          posted_date: String(date).replace(/\sGMT.*/gi,""),
+          author: "anonymous",
+          active: 1
+        }
+        Blogs.registerComment(id, comment);
+        $scope.comments.push(comment);
+        this.newcomment = "";
     }
-    Blogs.registerComment(id, comment);
-    $scope.comments.push(comment);
-    $scope.newcomment = "";
+  }
+
+  $scope.hasPost = function(obj){
+    for(var key in obj){
+      if(obj.hasOwnProperty(key)){
+        return true;
+      }
+    }
+    return false;
   }
 
 }])
 
 .controller('NavController', ['Blogs', '$rootScope', '$scope', function(Blogs, $rootScope, $scope){
-  $scope.hasPost = function(){
+  $scope.comments = Blogs.getComments();
+  $scope.hasPosts = function(){
     return Blogs.hasPosts();
   }
-
   Blogs.getAll().then(function(data){
     $rootScope.blogs = data;
   });
-
 }])
 
 
-//services
+// SERVICES
+.factory('Comments', ['$scope', function($scope){
+    return{
+        getAll: function(){
+            var blogs = angular.fromJson($window.localStorage['blogs']) || [];
+      			var comments = [];
+      			if(blogs.length){
+      	  			for(var i=0, max = blogs.length; i<max; i++){
+        					for(var j=0, max2 = blogs[i].comments.length; j<max2; j++){
+        						comments.push({
+        							content: blogs[i].comments[j].content,
+        							pid: blogs[i].pid,
+        							post_title: blogs[i].title,
+                      posted_date: blogs[i].comments[j].posted_date
+        						});
+        					}
+      				}
+      			}
+      			return comments;
+        }
+    }
+}])
+
 .factory('Blogs', ['$http', '$q', '$window', function($http, $q, $window){
 
-	var saveLocalStorage = function(blogs){
-	  $window.localStorage['blogs'] = angular.toJson(blogs);
-	}
-	var filterBlog = function(blogs, id){
-		 for(var i=0, max = blogs.length; i < max; i++){
-		    if(id == blogs[i].pid){
-			return {id: blogs[i].pid, post: blogs[i]};
-		    }
-		}
-		return {id:-1, post:{}};
-	}
-	var getBlogs = function(){
-		return angular.fromJson($window.localStorage['blogs']);
-	}
+  	var saveLocalStorage = function(blogs){
+  		$window.localStorage['blogs'] = angular.toJson(blogs);
+  	};
 
-	return {
-		getAll : function(){
-			  var defered = $q.defer(), blogs = getBlogs();
-			  defered.resolve(blogs);
-			  return defered.promise;
-		},
-		save: function(post){
-			  var blogs = getBlogs();
-			  blogs.push(post);
-			  saveLocalStorage(blogs);
-		},
-		hasPosts: function(){
-		 	 return (angular.fromJson($window.localStorage['blogs']).length > 0) ? true : false;
-		},
-		getPost: function(id){
-			  var defered = $q.defer(), blogs = getBlogs(), article = {};
-	   		  article = filterBlog(blogs, id);
-			  defered.resolve(article.post);
-			  return defered.promise;
-		},
-		registerLike: function(id){
-			  var blogs = getBlogs(), post = filterBlog(blogs, id);
-	      	  	  blogs[post.id].likes += 1;
-			  saveLocalStorage(blogs);
-		},
-		registerComment: function(id, newcomment){
-			 var blogs = getBlogs(), post = filterBlog(blogs, id);
-	   	         blogs[post.id].comments.push(newcomment);
-			 saveLocalStorage(blogs);
-		},
-		getComments: function(id){
-			  var defered = $q.defer(), blogs = getBlogs(), comments = [];
-			  comments = blogs.filter(function(elem, index){
-			      return (id == index) ? blogs[index].comments : [];
-			  });
-			  return comments;
-		}
-	}
+  	var filterBlog = function(blogs, id){
+  		for(var i=0, max = blogs.length; i < max; i++){
+  			if(id == blogs[i].pid){
+  				return {id: blogs[i].pid, post: blogs[i]};
+  			}
+  		}
+  		return {id:-1, post:{}};
+  	};
+
+  	var getBlogs = function(){
+  		return angular.fromJson($window.localStorage['blogs']) || [];
+  	};
+
+  	return {
+        		getAll : function(){
+        			  var defered = $q.defer(), blogs = getBlogs();
+        			  defered.resolve(blogs);
+        			  return defered.promise;
+        		},
+        		save: function(post){
+        			  var blogs = getBlogs();
+        			  blogs.push(post);
+        			  saveLocalStorage(blogs);
+        		},
+        		hasPosts: function(){
+        		 	 return (getBlogs().length > 0) ? true : false;
+        		},
+        		getPost: function(id){
+        			  var defered = $q.defer(), blogs = getBlogs(), article = {};
+        	   		  article = filterBlog(blogs, id);
+        			  defered.resolve(article.post);
+        			  return defered.promise;
+        		},
+        		registerLike: function(id){
+        			  var blogs = getBlogs(), post = filterBlog(blogs, id);
+        	      	  	  blogs[post.id].likes += 1;
+        			  saveLocalStorage(blogs);
+        		},
+        		registerComment: function(id, newcomment){
+        			 var blogs = getBlogs(), post = filterBlog(blogs, id);
+        	   	         blogs[post.id].comments.push(newcomment);
+        			 saveLocalStorage(blogs);
+        		},
+        		getComment: function(id){
+        			  var defered = $q.defer(), blogs = getBlogs(), comments = [];
+        			  comments = blogs.filter(function(elem, index){
+        			      return (id == index) ? blogs[index].comments : [];
+        			  });
+        			  return comments;
+        		},
+        		getComments: function(){
+        			var defered = $q.defer();
+        			var blogs = getBlogs();
+        			var comments = [];
+        			if(blogs.length){
+        	  			for(var i=0, max = blogs.length; i<max; i++){
+          					for(var j=0, max2 = blogs[i].comments.length; j<max2; j++){
+          						comments.push({
+          							content: blogs[i].comments[j].content,
+          							pid: blogs[i].pid,
+          							post_title: blogs[i].title,
+                        posted_date: blogs[i].comments[j].posted_date
+          						});
+          					}
+        				}
+        			}
+        			return comments;
+        		}
+  	}
 
 }])
 

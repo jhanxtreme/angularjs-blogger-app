@@ -1,0 +1,50 @@
+<section>
+  <!--post section-->
+  <article class="post" ng-if="!hasPost(post)">
+    <p>Article not found.</p>
+  </article>
+  <article class="post" ng-if="hasPost(post)">
+    <h2 class="title">{{post.title | ucwords }}</h2>
+    <em class="posted-on">posted on {{::post.date_posted}}</em>
+    <p>&nbsp;</p>
+    <p>{{post.content}}</p>
+    <p>&nbsp;</p>
+    <button class="btn btn-default" ng-click="registerLikes(post.pid)">Like</button>
+
+    <hr />
+    <div class="row">
+    <form name="form" class="form">
+
+        <div class="form-group">
+
+          <div class="col-xs-1"><img src="avatar-thumb.png" alt="img" width="55" /></div>
+          <div class="col-xs-11">
+              <textarea class="form-control" ng-model="newcomment" placeholder="Place your comment here."></textarea>
+              <input type="button" class="btn btn-info pull-right btn-add-comment" ng-click="registerComment(post.pid, newcomment)" value="Add Comment" />
+          </div>
+       </div>
+
+    </form>
+    </div>
+
+    <!--comment section-->
+    <div class="comments-section">
+      <div ng-repeat="comment in comments | reverse" class="row comments">
+          <blockqoute>
+            <a name="{{post.pid}}}"></a>
+            <div class="col-xs-1">
+              <img src="avatar-thumb.png" alt="img" width="55" />
+            </div>
+            <div class="col-xs-11">
+              <strong><span class="post-author">{{post.author | ucwords}}</span></strong>
+              <span><em class="posted-on">commented on {{comment.posted_date}}</em></span>
+              <p class="post-comments">{{comment.content}}</p>
+            </div>
+          </blockqoute>
+          <hr />
+        </div>
+      </div>
+    </div>
+  </article>
+
+</section>
