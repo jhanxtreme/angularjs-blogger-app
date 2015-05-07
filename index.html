@@ -2,42 +2,47 @@
 
 <html ng-app="myBlog">
 
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Blogger App - AngularJS</title>
+  <title>Blogger App - AngularJS</title>
 
-    <!-- custom css-->
-    <link rel="stylesheet" href="style.css" />
+  <!-- custom css-->
+  <link rel="stylesheet" href="css/style.css" />
 
-    <!-- css bootstrap dependencies-->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.css" />
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <!-- css bootstrap dependencies-->
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.css" />
+  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
-    <!-- angular dependecies-->
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular/angular-ui-router.js"></script>
+  <!-- angular dependecies-->
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular/angular-ui-router.js"></script>
 
-    <!-- js apps-->
-    <script src="app.js"></script>
+  <!-- js apps-->
+  <script src="core/app.js"></script>
+  <script src="core/controllers.js"></script>
+  <script src="core/services.js"></script>
+  <script src="core/filters.js"></script>
 
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <!--left content-->
-    <div class="left-content">
-      <div class="logo"><h1><a ui-sref="blog">BLOGGER PRESS</a></h1></div>
-      <div ui-view="left-content"></div>
-    </div>
+  <!--left content-->
+  <div class="left-content">
+    <div class="logo"><h1><a ui-sref="blog">BLOGGER PRESS</a></h1></div>
+    <div ui-view="left-content"></div>
+  </div>
 
-    <!--right content-->
-    <div class="right-content">
+  <!--right content-->
+  <div class="right-content">
+    <div class="inner-right-content">
       <div ui-view="right-content"></div>
     </div>
+  </div>
 
-  </body>
+</body>
 
 </html>
