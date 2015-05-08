@@ -66,7 +66,12 @@ angular.module('myBlog')
       });
 
       $scope.registerLikes = function(id){
-        Blogs.registerLike(id);
+          var elem_likeStatus = document.getElementById('like-status');
+          Blogs.registerLike(id);
+          setTimeout(function(){
+            elem_likeStatus.style.display = 'none';
+          }, 2000);
+          elem_likeStatus.style.display = 'block';
       }
 
       $scope.registerComment = function(id, newcomment){

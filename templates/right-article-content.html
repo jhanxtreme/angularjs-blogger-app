@@ -9,14 +9,14 @@
     <p>&nbsp;</p>
     <p>{{post.content}}</p>
     <p>&nbsp;</p>
-    <button class="btn btn-default" ng-click="registerLikes(post.pid)">Like</button>
+    <span class="btn btn-default" ng-click="registerLikes(post.pid)">Like</span>
+    <em class="like-status" id="like-status">You liked this post!</em>
 
     <hr />
     <div class="row">
     <form name="form" class="form">
 
         <div class="form-group">
-
           <div class="col-xs-1"><img src="commons/avatar-thumb.png" alt="img" width="55" /></div>
           <div class="col-xs-11">
               <textarea class="form-control" ng-model="newcomment" placeholder="Place your comment here."></textarea>

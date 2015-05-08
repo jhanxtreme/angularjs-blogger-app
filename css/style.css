@@ -141,3 +141,13 @@ input.form-search{
 .top-fields{
   list-style-type:none;
 }
+
+#like-status{
+  display:none;
+}
+.fadeout{
+    display: none;
+}
+.fadein{
+    display: block;
+}
